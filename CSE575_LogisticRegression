@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+# LOGISTIC REGRESSION IMPLEMENTATION
+import scipy.io
+import numpy as np
+Numpyfile= scipy.io.loadmat('/Users/salonidesai/Downloads/mnist_data.mat') 
+
+feature_vector = []
+feature_test_vector = []
+training_X = Numpyfile.get('trX')
+testing_X = Numpyfile.get('tsX')
+traininglabels_Y = Numpyfile.get('trY')
+testinglabels_Y = Numpyfile.get('tsY')
+
+# Finding the mean and standard deviation for every image - training dataset
+for i in range (len(training_X)):
+    feature_vector.append([np.mean(training_X[i , :]), np.std(training_X[i, :])])
+    
+feature_matrix = np.matrix(feature_vector)
+
+
+# Extracting features of the testing set
+for i in range (len(testing_X)):
+    feature_test_vector.append([np.mean(testing_X[i , :]), np.std(testing_X[i, :])])
+    
+feature_test_matrix = np.matrix(feature_test_vector)
+
+
+#Writing the sigmoid function for logistic regression
+
+def sigmoid(input):
+    return 1 / (1 + np.exp(-input))
+
+#Writing the logistic regression function, using  gradient ascent with alpha as the learning rate 
+    
+def logisticregression (feature_matrix, traininglabels_Y):
+    Weights = np.random.randn(3,1)
+    alpha = 0.00008
+    for i in range(36000):
+        yhat = sigmoid((feature_matrix * Weights[1:])+  Weights[0]) 
+        error = np.transpose(traininglabels_Y) - yhat
+        Weights[1:] = Weights[1:] + (alpha * np.transpose(feature_matrix) * error)
+        Weights[0] += (alpha * np.sum(error))
+    return Weights
+
+#Predicitng the classes of images using the boundary  computed
+    
+Weights = logisticregression(feature_matrix, traininglabels_Y)
+y = feature_test_matrix * Weights[1:] + Weights[0]
+result = np.round(sigmoid (y))
+results = result.ravel().tolist()
+
+
+# Calculating prediction accuracy
+def prediction_LR(results, testing_Y):
+    sum2 = 0
+    for i in range(len(testing_Y[0])):
+        if (results[0][i] == testing_Y[0][i]):
+            sum2 = sum2 +1
+    accuracy = (sum2/len(testing_Y[0]))*100
+    return accuracy
+
+#Printing percentage accuracy of classification
+PercentageAccuracy = prediction_LR(results, testinglabels_Y)
+print(PercentageAccuracy)
+    
+            
+        
+            
+            
+        
+    
+    
+    
+
+
+ 
+
+
+
+
+
+        
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
